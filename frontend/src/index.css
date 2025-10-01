@@ -16,9 +16,12 @@ body {
   margin: 0;
   font-family: 'Space Grotesk', sans-serif;
   background-color: var(--background-color);
+  background-image: radial-gradient(circle at top right, rgba(0, 255, 255, 0.1), transparent 40%),
+                    radial-gradient(circle at bottom left, rgba(0, 255, 255, 0.1), transparent 40%);
   color: var(--text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
 h1, h2 {

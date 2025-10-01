@@ -3,12 +3,14 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute'; 
+import './components/layout/Navbar.css';
 function App() {
   return (
     <Router>
       <div>
-        <nav>
-          <ul>
+        <nav className="navbar">
+          <Link to="/" className="navbar-brand">Campus Connect</Link>
+          <ul className="navbar-links">
             <li>
               <Link to="/">Home</Link>
             </li>
@@ -21,13 +23,9 @@ function App() {
           </ul>
         </nav>
 
-        <hr />
-
         <Routes>
-          {/* 2. Implement the protected route */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
-            {/* You can add more protected routes here later */}
           </Route>
           
           <Route path="/login" element={<LoginPage />} />

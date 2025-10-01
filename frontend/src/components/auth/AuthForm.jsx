@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react'; // 1. Import useContext
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext'; // 2. Import our AuthContext
 import AuthService from '../../services/AuthService';
+import './AuthForm.css';
 
 const AuthForm = ({ isRegister = false }) => {
   const { login } = useContext(AuthContext); // 3. Get the login function from context
@@ -41,7 +42,11 @@ const AuthForm = ({ isRegister = false }) => {
 
   return (
     <div className="form-container">
-      <h2>{isRegister ? 'Register' : 'Login'}</h2>
+      <h2 className="form-title">{isRegister ? 'Create Account' : 'Welcome Back'}</h2>
+      <p className="form-subtitle">
+        {isRegister ? 'Enter your details to get started.' : 'Sign in to continue to your dashboard.'}
+      </p>
+
       <form onSubmit={onSubmit}>
         {isRegister && (
           <div className="form-group">
@@ -66,7 +71,10 @@ const AuthForm = ({ isRegister = false }) => {
           />
         </div>
         <div className="form-group">
-          <label>Password</label>
+          <div className="label-row">
+            <label>Password</label>
+            {!isRegister && <a href="#" className="forgot-password-link">Forgot password?</a>}
+          </div>
           <input
             type="password"
             name="password"
@@ -79,6 +87,12 @@ const AuthForm = ({ isRegister = false }) => {
         {error && <p className="error-message">{error}</p>}
         <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
       </form>
+      <p className="form-footer-text">
+        {isRegister ? 'Already have an account? ' : "Don't have an account? "}
+        <a href={isRegister ? '/login' : '/register'} className="form-footer-link">
+          {isRegister ? 'Sign In' : 'Sign up'}
+        </a>
+      </p>
     </div>
   );
 };

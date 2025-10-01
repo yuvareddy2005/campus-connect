@@ -3,8 +3,7 @@ import AuthForm from '../components/auth/AuthForm';
 
 const RegisterPage = () => {
   return (
-    <div>
-      <h1>Register Page</h1>
+    <div className="auth-container">
       <AuthForm isRegister={true} />
     </div>
   );
