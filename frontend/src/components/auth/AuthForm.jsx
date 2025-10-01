@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
-import AuthService from '../../services/AuthService';
+import React, { useState, useContext } from 'react'; // 1. Import useContext
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext'; // 2. Import our AuthContext
+import AuthService from '../../services/AuthService';
 
 const AuthForm = ({ isRegister = false }) => {
+  const { login } = useContext(AuthContext); // 3. Get the login function from context
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
   });
-  const [error, setError] = useState(''); // State for error messages
+  const [error, setError] = useState('');
 
   const { name, email, password } = formData;
 
@@ -18,17 +20,15 @@ const AuthForm = ({ isRegister = false }) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
 
     try {
       if (isRegister) {
-        const response = await AuthService.register(name, email, password);
-        console.log('Registration successful:', response.data);
-        // We could automatically log the user in here or redirect them.
+        await AuthService.register(name, email, password);
+        navigate('/login');
       } else {
-        // --- THIS PART CHANGES ---
-        const userData = await AuthService.login(email, password);
-        console.log('Login successful:', userData);
+        // 4. Use the login function from the context
+        await login(email, password);
         navigate('/');
       }
     } catch (err) {
@@ -76,7 +76,6 @@ const AuthForm = ({ isRegister = false }) => {
             required
           />
         </div>
-        {/* Display the error message if it exists */}
         {error && <p className="error-message">{error}</p>}
         <button type="submit">{isRegister ? 'Register' : 'Login'}</button>
       </form>
