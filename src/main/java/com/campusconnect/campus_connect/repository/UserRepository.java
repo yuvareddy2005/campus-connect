@@ -1,5 +1,3 @@
-// File: src/main/java/com/campusconnect/campus_connect/repository/UserRepository.java
-
 package com.campusconnect.campus_connect.repository;
 
 import java.util.Optional;
