@@ -23,3 +23,8 @@
   display: flex;
   flex-direction: column; 
 }
+
+.event-link {
+  text-decoration: none;
+  color: inherit;
+}

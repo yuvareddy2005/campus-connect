@@ -2,7 +2,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import EventService from '../services/EventService';
 import { AuthContext } from '../context/AuthContext';
 import EventCard from '../components/events/EventCard';
-import './HomePage.css'; // We will create this file next
+import './HomePage.css';
+import { Link } from 'react-router-dom';
 
 const HomePage = () => {
   const { user, logout } = useContext(AuthContext); // Get user and logout from context
@@ -37,7 +38,11 @@ const HomePage = () => {
       <main className="feed-container">
         {error && <p className="error-message">{error}</p>}
         {events.length > 0 ? (
-          events.map((event) => <EventCard key={event.id} event={event} />)
+          events.map((event) => (
+            <Link to={`/events/${event.id}`} key={event.id} className="event-link">
+              <EventCard event={event} />
+            </Link>
+          ))
         ) : (
           !error && <p>No events found. Why not create one?</p>
         )}

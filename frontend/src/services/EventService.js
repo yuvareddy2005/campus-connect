@@ -1,11 +1,16 @@
-import api from './api'; // Import our pre-configured api instance
+import api from './api';
 
 const getAllEvents = () => {
-  return api.get('/events'); // Use the base URL from the api instance
+  return api.get('/events');
+};
+
+const getEventById = (id) => {
+  return api.get(`/events/${id}`);
 };
 
 const EventService = {
   getAllEvents,
+  getEventById,
 };
 
 export default EventService;

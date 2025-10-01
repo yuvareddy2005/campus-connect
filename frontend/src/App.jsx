@@ -3,6 +3,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProtectedRoute from './components/ProtectedRoute'; 
+import EventDetailsPage from './pages/EventDetailsPage';
 import './components/layout/Navbar.css';
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/events/:id" element={<EventDetailsPage />} /> 
           </Route>
           
           <Route path="/login" element={<LoginPage />} />
