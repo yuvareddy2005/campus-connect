@@ -1,7 +1,9 @@
 import api from './api';
 
-const getAllEvents = () => {
-  return api.get('/events');
+const PAGE_SIZE = 5; 
+
+const getAllEvents = (page) => {
+  return api.get(`/events?page=${page}&size=${PAGE_SIZE}&sort=date,desc`);
 };
 
 const getEventById = (id) => {

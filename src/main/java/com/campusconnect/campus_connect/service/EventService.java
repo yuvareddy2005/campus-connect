@@ -1,9 +1,10 @@
 package com.campusconnect.campus_connect.service;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page; 
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.campusconnect.campus_connect.entity.Event;
@@ -15,8 +16,8 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public Page<Event> getAllEvents(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
 
     public Optional<Event> getEventById(Long id) {
