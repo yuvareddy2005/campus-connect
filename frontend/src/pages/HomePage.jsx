@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useContext, useRef} from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback} from 'react';
 import EventService from '../services/EventService';
 import { AuthContext } from '../context/AuthContext';
 import EventCard from '../components/events/EventCard';
 import { Link } from 'react-router-dom';
+import SearchBox from '../components/search/SearchBox';
 import './HomePage.css';
 
 const HomePage = () => {
@@ -12,35 +13,40 @@ const HomePage = () => {
   const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const initialLoad = useRef(true);
 
-  const fetchEvents = async (currentPage) => {
+  const fetchEvents = useCallback(async (currentPage, currentSearchTerm) => {
     setLoading(true);
     setError('');
     try {
-      const response = await EventService.getAllEvents(currentPage);
-      // Append new events to the existing list
-      setEvents(prevEvents => [...prevEvents, ...response.data.content]);
-      // Update hasMore based on whether this is the last page
+      const response = currentSearchTerm
+        ? await EventService.searchEvents(currentSearchTerm, currentPage)
+        : await EventService.getAllEvents(currentPage);
+      
+      setEvents(prevEvents => currentPage === 0 ? response.data.content : [...prevEvents, ...response.data.content]);
       setHasMore(!response.data.last);
     } catch (err) {
       console.error('Failed to fetch events:', err);
-      setError('Failed to load events. You may need to log in again.');
+      setError('Failed to load events.');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (initialLoad.current) {
-      setEvents([]); // Clear events on initial load to prevent duplication on re-login
-      setPage(0);
+    const handler = setTimeout(() => {
+      setEvents([]); 
+      setPage(0);    
       setHasMore(true);
-      fetchEvents(0);
-      initialLoad.current = false; // Flip the flag to false
-    }
-  }, []);// The empty array [] means this effect runs only once on mount
+      fetchEvents(0, searchTerm);
+    }, 250);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchTerm, fetchEvents]);
 
   const loadMoreEvents = () => {
     const nextPage = page + 1;
@@ -58,6 +64,8 @@ const HomePage = () => {
         </div>
       </header>
       
+      <SearchBox searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+
       <main className="feed-container">
         {error && <p className="error-message">{error}</p>}
         {events.map((event) => (
@@ -66,7 +74,6 @@ const HomePage = () => {
           </Link>
         ))}
 
-        {/* --- "Load More" Button --- */}
         {loading && <p>Loading...</p>}
         {hasMore && !loading && (
           <button onClick={loadMoreEvents} className="load-more-btn">
