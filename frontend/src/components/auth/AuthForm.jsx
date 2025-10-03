@@ -30,7 +30,7 @@ const AuthForm = ({ isRegister = false }) => {
       } else {
         // 4. Use the login function from the context
         await login(email, password);
-        navigate('/');
+        navigate('/feed');
       }
     } catch (err) {
       const errorMessage =

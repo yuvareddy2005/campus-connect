@@ -1,14 +1,9 @@
-/* src/index.css */
-
-/* Use Google Fonts for a modern, techy feel */
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
 
 :root {
-  /* --- Campus Nightlife Theme --- */
   --background-color: #121212;
   --text-color: #E0E0E0;
-  --primary-color: #00FFFF; /* Bright Cyan */
-  --surface-color: #1E1E1E; /* For cards and forms */
+  --primary-color: #00FFFF;
   --border-color: #2E2E2E;
 }
 

@@ -4,9 +4,9 @@ import { AuthContext } from '../context/AuthContext';
 import EventCard from '../components/events/EventCard';
 import { Link } from 'react-router-dom';
 import SearchBox from '../components/search/SearchBox';
-import './HomePage.css';
+import './FeedPage.css';
 
-const HomePage = () => {
+const FeedPage = () => {
   const { user, logout } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
   const [page, setPage] = useState(0);
@@ -58,10 +58,6 @@ const HomePage = () => {
     <div className="home-container">
       <header className="home-header">
         <h1>Event Feed</h1>
-        <div className="user-info">
-          <span>Welcome, {user?.name || 'Guest'}</span>
-          <button onClick={logout}>Logout</button>
-        </div>
       </header>
       
       <SearchBox searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
@@ -85,4 +81,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default FeedPage;
