@@ -10,9 +10,14 @@ const getEventById = (id) => {
   return api.get(`/events/${id}`);
 };
 
+const createEvent = (eventData) => {
+  return api.post('/events', eventData);
+};
+
 const EventService = {
   getAllEvents,
   getEventById,
+  createEvent,
 };
 
 export default EventService;

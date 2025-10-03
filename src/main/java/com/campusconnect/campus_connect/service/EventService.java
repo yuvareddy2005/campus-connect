@@ -5,16 +5,23 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page; 
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.campusconnect.campus_connect.entity.Event;
+import com.campusconnect.campus_connect.entity.User;
 import com.campusconnect.campus_connect.repository.EventRepository;
+import com.campusconnect.campus_connect.repository.UserRepository;
 
 @Service
 public class EventService {
 
     @Autowired
     private EventRepository eventRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public Page<Event> getAllEvents(Pageable pageable) {
         return eventRepository.findAll(pageable);
@@ -25,6 +32,14 @@ public class EventService {
     }
 
     public Event createEvent(Event event) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = userDetails.getUsername();
+
+        User creator = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + username));
+
+        event.setCreator(creator);
+
         return eventRepository.save(event);
     }
 
