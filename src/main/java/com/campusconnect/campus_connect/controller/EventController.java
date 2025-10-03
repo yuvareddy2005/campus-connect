@@ -1,5 +1,3 @@
-// File: src/main/java/com/campusconnect/campus_connect/controller/EventController.java
-
 package com.campusconnect.campus_connect.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.campusconnect.campus_connect.dto.EventResponseDto;
 import com.campusconnect.campus_connect.entity.Event;
 import com.campusconnect.campus_connect.service.EventService;
 
@@ -25,15 +24,13 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-    // Get all events
     @GetMapping
-    public Page<Event> getAllEvents(Pageable pageable) {
+    public Page<EventResponseDto> getAllEvents(Pageable pageable) {
         return eventService.getAllEvents(pageable);
     }
 
-    // Get a single event by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Event> getEventById(@PathVariable Long id) {
+    public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
         return eventService.getEventById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -41,7 +38,7 @@ public class EventController {
 
     // Create a new event
     @PostMapping
-    public Event createEvent(@RequestBody Event event) {
+    public EventResponseDto createEvent(@RequestBody Event event) {
         return eventService.createEvent(event);
     }
 

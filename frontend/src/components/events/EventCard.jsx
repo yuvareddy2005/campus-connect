@@ -11,6 +11,7 @@ const EventCard = ({ event }) => {
     <div className="event-card">
       <div className="event-card-header">
         <h3 className="event-name">{event.name}</h3>
+        <span className="event-creator">by {event.creator?.name || 'Unknown'}</span>
       </div>
       <p className="event-description">{event.description}</p>
       <div className="event-card-footer">
