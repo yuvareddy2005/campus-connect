@@ -12,4 +12,5 @@ public class EventResponseDto {
     private LocalDate date;
     private String location;
     private UserDto creator;
+    private int commentCount;
 }

@@ -61,6 +61,7 @@ public class EventService {
         userDto.setName(event.getCreator().getName());
         
         eventDto.setCreator(userDto);
+        eventDto.setCommentCount(event.getCommentCount());
         return eventDto;
     }
     

@@ -2,6 +2,8 @@ package com.campusconnect.campus_connect.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.Formula;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -31,4 +33,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
+
+    @Formula("(SELECT count(*) FROM comments c WHERE c.event_id = id AND c.parent_comment_id IS NULL)")
+    private int commentCount;
 }
