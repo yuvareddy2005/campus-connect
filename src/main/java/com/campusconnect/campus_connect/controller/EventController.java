@@ -67,4 +67,16 @@ public class EventController {
             Pageable pageable) {
         return eventService.searchEvents(keyword, pageable);
     }
+
+    @PostMapping("/{eventId}/rsvp")
+    public ResponseEntity<Void> rsvpToEvent(@PathVariable Long eventId) {
+        eventService.rsvpToEvent(eventId);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{eventId}/rsvp")
+    public ResponseEntity<Void> cancelRsvp(@PathVariable Long eventId) {
+        eventService.cancelRsvp(eventId);
+        return ResponseEntity.noContent().build();
+    }
 }

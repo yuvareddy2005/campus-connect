@@ -13,4 +13,6 @@ public class EventResponseDto {
     private String location;
     private UserDto creator;
     private int commentCount;
+    private int attendeeCount;
+    private boolean isCurrentUserRsvpd;
 }

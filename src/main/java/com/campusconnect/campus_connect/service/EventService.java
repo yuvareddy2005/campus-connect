@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.campusconnect.campus_connect.dto.EventResponseDto;
 import com.campusconnect.campus_connect.dto.UserDto;
@@ -62,6 +63,18 @@ public class EventService {
         
         eventDto.setCreator(userDto);
         eventDto.setCommentCount(event.getCommentCount());
+        eventDto.setAttendeeCount(event.getAttendeeCount());
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        boolean isRsvpd = false;
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+            User currentUser = userRepository.findByEmail(username).orElse(null);
+            if (currentUser != null) {
+                isRsvpd = event.getAttendees().stream().anyMatch(user -> user.getId().equals(currentUser.getId()));
+            }
+        }
+        eventDto.setCurrentUserRsvpd(isRsvpd);
         return eventDto;
     }
     
@@ -82,5 +95,31 @@ public class EventService {
         Specification<Event> spec = EventSpecification.findByCriteria(keyword);
         Page<Event> events = eventRepository.findAll(spec, pageable);
         return events.map(this::convertToDto);
+    }
+
+    @Transactional
+    public void rsvpToEvent(Long eventId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.getAttendees().add(user);
+        eventRepository.save(event);
+    }
+
+    @Transactional
+    public void cancelRsvp(Long eventId) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new RuntimeException("Event not found"));
+
+        event.getAttendees().remove(user);
+        eventRepository.save(event);
     }
 }
