@@ -40,3 +40,54 @@
   font-size: 1rem;
   color: #a0a0a0;
 }
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.rsvp-button {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.rsvp-button.join {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.rsvp-button.join:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+}
+
+.rsvp-button.leave {
+  background-color: transparent;
+  border: 1px solid rgba(255, 77, 77, 0.5);
+  color: #ff4d4d;
+}
+
+.rsvp-button.leave:hover {
+  background-color: rgba(255, 77, 77, 0.1);
+}
+
+.attendee-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin: 10px 0 20px 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+}

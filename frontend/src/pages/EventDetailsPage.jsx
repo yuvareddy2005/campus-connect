@@ -13,6 +13,18 @@ const EventDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // 1. Reusable function to fetch event details
+  const fetchEventDetails = async () => {
+    try {
+      const eventResponse = await EventService.getEventById(id);
+      setEvent(eventResponse.data);
+    } catch (err) {
+      setError('Failed to load event details.');
+      console.error('Fetch Event Error:', err);
+    }
+  };
+
+  // Reusable function to fetch comments
   const fetchComments = async () => {
     try {
       const commentsResponse = await CommentService.getCommentsForEvent(id);
@@ -23,27 +35,37 @@ const EventDetailsPage = () => {
     }
   };
 
+  // Initial load
   useEffect(() => {
-    const fetchEventDetails = async () => {
+    const initData = async () => {
       setLoading(true);
-      try {
-        const eventResponse = await EventService.getEventById(id);
-        setEvent(eventResponse.data);
-        await fetchComments();
-      } catch (err) {
-        setError('Failed to load event details.');
-        console.error('Fetch Event Error:', err);
-      } finally {
-        setLoading(false);
-      }
+      await Promise.all([fetchEventDetails(), fetchComments()]);
+      setLoading(false);
     };
-    fetchEventDetails();
+    initData();
   }, [id]);
+
+  // 2. Handle RSVP Action
+  const handleRsvp = async () => {
+    if (!event) return;
+    try {
+      if (event.currentUserRsvpd) {
+        await EventService.cancelRsvp(id);
+      } else {
+        await EventService.rsvpToEvent(id);
+      }
+      // Refresh event data to update the button and attendee count
+      await fetchEventDetails(); 
+    } catch (err) {
+      console.error('RSVP failed:', err);
+      alert('Failed to update RSVP status. Please try again.');
+    }
+  };
 
   const handlePostComment = async (commentData) => {
     try {
       await CommentService.postComment(id, commentData);
-      fetchComments();
+      fetchComments(); 
     } catch (err) {
       console.error('Failed to post comment:', err);
       setError('Failed to post comment. Please try again.');
@@ -64,8 +86,27 @@ const EventDetailsPage = () => {
       <Link to="/feed" className="back-link">&larr; Back to Feed</Link>
       
       <div className="details-card">
-        <h1 className="details-title">{event.name}</h1>
+        <div className="details-header">
+            <h1 className="details-title">{event.name}</h1>
+            {/* 3. RSVP Button Section */}
+            <div className="rsvp-section">
+                <button 
+                    onClick={handleRsvp} 
+                    className={`rsvp-button ${event.currentUserRsvpd ? 'leave' : 'join'}`}
+                >
+                    {event.currentUserRsvpd ? 'Leave Event' : 'Join Event'}
+                </button>
+            </div>
+        </div>
+
         <p className="details-creator">Hosted by {event.creator?.name || 'Unknown'}</p>
+        
+        {/* Attendee Count Badge */}
+        <div className="attendee-badge">
+            <span className="attendee-icon">👥</span>
+            <span>{event.attendeeCount} {event.attendeeCount === 1 ? 'person is' : 'people are'} going</span>
+        </div>
+
         <p className="details-description">{event.description}</p>
         <div className="details-footer">
           <span><strong>Date:</strong> {formatDate(event.date)}</span>
