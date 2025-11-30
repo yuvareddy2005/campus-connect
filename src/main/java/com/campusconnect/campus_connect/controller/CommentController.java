@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.campusconnect.campus_connect.dto.ApiResponse; // Import wrapper
 import com.campusconnect.campus_connect.dto.CommentDto;
 import com.campusconnect.campus_connect.dto.CommentRequestDto;
 import com.campusconnect.campus_connect.service.CommentService;
@@ -23,20 +24,20 @@ public class CommentController {
     private CommentService commentService;
 
     @GetMapping
-    public ResponseEntity<List<CommentDto>> getCommentsForEvent(@PathVariable Long eventId) {
-        return ResponseEntity.ok(commentService.getCommentsByEvent(eventId));
+    public ResponseEntity<ApiResponse<List<CommentDto>>> getCommentsForEvent(@PathVariable Long eventId) {
+        List<CommentDto> comments = commentService.getCommentsByEvent(eventId);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Comments fetched successfully", comments));
     }
 
     @PostMapping
-    public ResponseEntity<CommentDto> addCommentToEvent(
+    public ResponseEntity<ApiResponse<CommentDto>> addCommentToEvent(
             @PathVariable Long eventId,
             @RequestBody CommentRequestDto commentRequest) {
-        
+
         CommentDto createdComment = commentService.createComment(
-                eventId, 
-                commentRequest.getContent(), 
-                commentRequest.getParentCommentId()
-        );
-        return ResponseEntity.ok(createdComment);
+                eventId,
+                commentRequest.getContent(),
+                commentRequest.getParentCommentId());
+        return ResponseEntity.ok(new ApiResponse<>(true, "Comment posted successfully", createdComment));
     }
 }

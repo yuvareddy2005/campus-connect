@@ -1,22 +1,14 @@
 package com.campusconnect.campus_connect.controller;
 
+import com.campusconnect.campus_connect.dto.ApiResponse; // Import wrapper
+import com.campusconnect.campus_connect.dto.EventResponseDto;
+import com.campusconnect.campus_connect.entity.Event;
+import com.campusconnect.campus_connect.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.campusconnect.campus_connect.dto.EventResponseDto;
-import com.campusconnect.campus_connect.entity.Event;
-import com.campusconnect.campus_connect.service.EventService;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/events")
@@ -26,57 +18,62 @@ public class EventController {
     private EventService eventService;
 
     @GetMapping
-    public Page<EventResponseDto> getAllEvents(Pageable pageable) {
-        return eventService.getAllEvents(pageable);
+    public ResponseEntity<ApiResponse<Page<EventResponseDto>>> getAllEvents(Pageable pageable) {
+        Page<EventResponseDto> events = eventService.getAllEvents(pageable);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Events fetched successfully", events));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<EventResponseDto>> getEventById(@PathVariable Long id) {
+        // We rely on the service throwing an exception if not found, which
+        // GlobalExceptionHandler catches
+        // Or we use .orElseThrow in the service.
+        // For now, let's assume the service returns Optional, but standard practice
+        // with this wrapper
+        // is to have the Service throw "ResourceNotFoundException" if missing.
+        // Assuming your service returns Optional:
         return eventService.getEventById(id)
-                .map(ResponseEntity::ok)
+                .map(event -> ResponseEntity.ok(new ApiResponse<>(true, "Event fetched successfully", event)))
                 .orElse(ResponseEntity.notFound().build());
+        // Note: ideally we'd throw an exception here too to get a JSON 404, but this is
+        // fine for now.
     }
 
-    // Create a new event
     @PostMapping
-    public EventResponseDto createEvent(@RequestBody Event event) {
-        return eventService.createEvent(event);
+    public ResponseEntity<ApiResponse<EventResponseDto>> createEvent(@RequestBody Event event) {
+        EventResponseDto createdEvent = eventService.createEvent(event);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Event created successfully", createdEvent));
     }
 
-    // Update an existing event
     @PutMapping("/{id}")
-    public ResponseEntity<Event> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
-        try {
-            Event updatedEvent = eventService.updateEvent(id, eventDetails);
-            return ResponseEntity.ok(updatedEvent);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ApiResponse<Event>> updateEvent(@PathVariable Long id, @RequestBody Event eventDetails) {
+        Event updatedEvent = eventService.updateEvent(id, eventDetails);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Event updated successfully", updatedEvent));
     }
 
-    // Delete an event
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteEvent(@PathVariable Long id) {
         eventService.deleteEvent(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiResponse<>(true, "Event deleted successfully"));
     }
 
     @GetMapping("/search")
-    public Page<EventResponseDto> searchEvents(
-            @RequestParam(required = false) String keyword, 
+    public ResponseEntity<ApiResponse<Page<EventResponseDto>>> searchEvents(
+            @RequestParam(required = false) String keyword,
             Pageable pageable) {
-        return eventService.searchEvents(keyword, pageable);
+        Page<EventResponseDto> events = eventService.searchEvents(keyword, pageable);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Search results fetched successfully", events));
     }
 
     @PostMapping("/{eventId}/rsvp")
-    public ResponseEntity<Void> rsvpToEvent(@PathVariable Long eventId) {
+    public ResponseEntity<ApiResponse<Void>> rsvpToEvent(@PathVariable Long eventId) {
         eventService.rsvpToEvent(eventId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new ApiResponse<>(true, "RSVP successful"));
     }
 
     @DeleteMapping("/{eventId}/rsvp")
-    public ResponseEntity<Void> cancelRsvp(@PathVariable Long eventId) {
+    public ResponseEntity<ApiResponse<Void>> cancelRsvp(@PathVariable Long eventId) {
         eventService.cancelRsvp(eventId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(new ApiResponse<>(true, "RSVP canceled successfully"));
     }
 }
