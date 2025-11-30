@@ -1,27 +1,30 @@
-import axios from 'axios';
+import api from './api';
 
-const API_URL = 'http://localhost:8080/api/auth/';
-
-const register = (name, email, password) => {
-  return axios.post(API_URL + 'register', {
-    name,
-    email,
-    password,
-  });
+// Register user
+const register = async (userData) => {
+  const response = await api.post('/auth/register', userData);
+  // The interceptor unwraps the response, so we just return response.data
+  return response.data;
 };
 
+// Login user
 const login = async (email, password) => {
-  const response = await axios.post(API_URL + 'login', {
-    email,
-    password,
-  });
+  const response = await api.post('/auth/login', { email, password });
+  
+  // Debug log to see exactly what we get back
+  console.log("Login Response:", response.data);
+
   if (response.data.token) {
-    localStorage.setItem('user', JSON.stringify(response.data));
+    localStorage.setItem('token', response.data.token);
+    // If you send the user object on login, save it too:
+    // localStorage.setItem('user', JSON.stringify(response.data.user)); 
   }
   return response.data;
 };
 
+// Logout user
 const logout = () => {
+  localStorage.removeItem('token');
   localStorage.removeItem('user');
 };
 
