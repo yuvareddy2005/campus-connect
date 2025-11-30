@@ -1,11 +1,11 @@
-import React, { useState, useContext } from 'react'; // 1. Import useContext
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext'; // 2. Import our AuthContext
+import { AuthContext } from '../../context/AuthContext';
 import AuthService from '../../services/AuthService';
 import './AuthForm.css';
 
 const AuthForm = ({ isRegister = false }) => {
-  const { login } = useContext(AuthContext); // 3. Get the login function from context
+  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
@@ -19,24 +19,32 @@ const AuthForm = ({ isRegister = false }) => {
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const onSubmit = async (e) => {
+const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     try {
       if (isRegister) {
-        await AuthService.register(name, email, password);
+        await AuthService.register({ name, email, password });
         navigate('/login');
       } else {
-        // 4. Use the login function from the context
         await login(email, password);
         navigate('/feed');
       }
     } catch (err) {
-      const errorMessage =
-        err.response?.data?.message || err.response?.data || 'An error occurred.';
-      setError(errorMessage);
-      console.error('Authentication error:', err.response);
+      // --- THE FIX IS HERE ---
+      
+      // 1. If the error is just a string (from our API interceptor), use it directly
+      if (typeof err === 'string') {
+        setError(err);
+      } 
+      // 2. Otherwise, look for the standard Axios error structure (network errors, etc.)
+      else {
+        const errorMessage = err.response?.data?.message || err.message || 'An error occurred.';
+        setError(errorMessage);
+      }
+      
+      console.error('Authentication error:', err);
     }
   };
 

@@ -11,13 +11,15 @@ const register = async (userData) => {
 const login = async (email, password) => {
   const response = await api.post('/auth/login', { email, password });
   
-  // Debug log to see exactly what we get back
   console.log("Login Response:", response.data);
 
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
-    // If you send the user object on login, save it too:
-    // localStorage.setItem('user', JSON.stringify(response.data.user)); 
+    
+    // --- FIX: Uncomment and update this line ---
+    // We now save the entire response data (which includes token AND user object)
+    // This allows AuthContext to restore the session on refresh.
+    localStorage.setItem('user', JSON.stringify(response.data)); 
   }
   return response.data;
 };

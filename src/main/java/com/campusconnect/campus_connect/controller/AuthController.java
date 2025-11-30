@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import com.campusconnect.campus_connect.dto.UserDto;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -30,6 +31,9 @@ public class AuthController {
 
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private com.campusconnect.campus_connect.repository.UserRepository userRepository;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<User>> registerUser(@RequestBody RegisterDto registerDto) {
@@ -52,7 +56,17 @@ public class AuthController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String token = jwtService.generateToken(userDetails);
 
-        AuthResponseDto authResponse = new AuthResponseDto(token);
+        // Fetch the user entity to get name and ID
+        User user = userRepository.findByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Create UserDto
+        UserDto userDto = new UserDto();
+        userDto.setId(user.getId());
+        userDto.setName(user.getName());
+
+        // Pass both token and userDto to the response
+        AuthResponseDto authResponse = new AuthResponseDto(token, userDto);
         ApiResponse<AuthResponseDto> response = new ApiResponse<>(true, "Login successful", authResponse);
 
         return ResponseEntity.ok(response);
