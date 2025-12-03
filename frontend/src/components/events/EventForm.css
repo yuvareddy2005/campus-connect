@@ -12,3 +12,33 @@
   min-height: 120px;
   resize: vertical;
 }
+
+.file-input-hidden {
+  display: none;
+}
+
+.file-upload-btn {
+  display: inline-block;
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 15px;
+}
+
+.file-upload-btn:hover {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
+}
+
+.file-name-text {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  font-style: italic;
+}

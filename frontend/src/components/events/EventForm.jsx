@@ -60,13 +60,21 @@ const EventForm = () => {
         </div>
   
         <div className="form-group">
-          <label>Event Poster (Optional)</label>
+          <label style={{ marginBottom: '10px', display: 'block' }}>Event Poster (Optional)</label>
+          
           <input 
             type="file" 
+            id="file-upload" 
             accept="image/*" 
             onChange={onFileChange} 
-            className="file-input"
+            className="file-input-hidden"
           />
+          <label htmlFor="file-upload" className="file-upload-btn">
+            Choose Image
+          </label>
+          <span className="file-name-text">
+            {file ? file.name : "No file chosen"}
+          </span>
         </div>
 
         <div className="form-group">

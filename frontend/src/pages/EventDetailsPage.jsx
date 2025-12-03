@@ -13,7 +13,6 @@ const EventDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // 1. Reusable function to fetch event details
   const fetchEventDetails = async () => {
     try {
       const eventResponse = await EventService.getEventById(id);
@@ -24,7 +23,6 @@ const EventDetailsPage = () => {
     }
   };
 
-  // Reusable function to fetch comments
   const fetchComments = async () => {
     try {
       const commentsResponse = await CommentService.getCommentsForEvent(id);
@@ -35,7 +33,6 @@ const EventDetailsPage = () => {
     }
   };
 
-  // Initial load
   useEffect(() => {
     const initData = async () => {
       setLoading(true);
@@ -45,7 +42,6 @@ const EventDetailsPage = () => {
     initData();
   }, [id]);
 
-  // 2. Handle RSVP Action
   const handleRsvp = async () => {
     if (!event) return;
     try {
@@ -54,7 +50,6 @@ const EventDetailsPage = () => {
       } else {
         await EventService.rsvpToEvent(id);
       }
-      // Refresh event data to update the button and attendee count
       await fetchEventDetails(); 
     } catch (err) {
       console.error('RSVP failed:', err);
@@ -81,14 +76,23 @@ const EventDetailsPage = () => {
   if (error) return <div className="error-message">{error}</div>;
   if (!event) return <div>Event not found.</div>;
 
+  const placeholderImage = `https://placehold.co/800x400/121212/00FFFF?text=${encodeURIComponent(event.name)}`;
+
   return (
     <div className="details-container">
       <Link to="/feed" className="back-link">&larr; Back to Feed</Link>
       
       <div className="details-card">
+        <div className="details-image-container">
+          <img 
+            src={event.imageUrl || placeholderImage} 
+            alt={event.name} 
+            className="details-image" 
+          />
+        </div>
+
         <div className="details-header">
             <h1 className="details-title">{event.name}</h1>
-            {/* 3. RSVP Button Section */}
             <div className="rsvp-section">
                 <button 
                     onClick={handleRsvp} 
@@ -101,7 +105,6 @@ const EventDetailsPage = () => {
 
         <p className="details-creator">Hosted by {event.creator?.name || 'Unknown'}</p>
         
-        {/* Attendee Count Badge */}
         <div className="attendee-badge">
             <span className="attendee-icon">👥</span>
             <span>{event.attendeeCount} {event.attendeeCount === 1 ? 'person is' : 'people are'} going</span>
