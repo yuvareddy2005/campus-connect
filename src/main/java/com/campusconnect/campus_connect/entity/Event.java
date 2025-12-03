@@ -30,7 +30,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = {"creator", "attendees"}) 
+@ToString(exclude = { "creator", "attendees" })
 public class Event {
 
     @Id
@@ -41,6 +41,7 @@ public class Event {
     private String description;
     private LocalDate date;
     private String location;
+    private String imageUrl;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id", nullable = false)
@@ -50,11 +51,7 @@ public class Event {
     private int commentCount;
 
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "event_attendees",
-        joinColumns = @JoinColumn(name = "event_id"),
-        inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "event_attendees", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> attendees = new HashSet<>();
 
     @Formula("(SELECT count(*) FROM event_attendees ea WHERE ea.event_id = id)")

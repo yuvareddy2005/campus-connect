@@ -11,6 +11,7 @@ public class EventResponseDto {
     private String description;
     private LocalDate date;
     private String location;
+    private String imageUrl;
     private UserDto creator;
     private int commentCount;
     private int attendeeCount;

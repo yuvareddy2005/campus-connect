@@ -10,12 +10,12 @@ const EventCard = ({ event }) => {
   };
 
   const { month, day } = formatDateBadge(event.date);
-
+  const placeholderImage = `https://placehold.co/800x400/121212/00FFFF?text=${encodeURIComponent(event.name)}`;
   return (
     <div className="event-card-v2 glass-card">
       <div className="card-image-container">
         <img 
-          src={`https://placehold.co/800x400/121212/00FFFF?text=Event+Image`} 
+          src={event.imageUrl || placeholderImage} 
           alt={event.name} 
           className="card-image" 
         />

@@ -18,7 +18,6 @@ const createEvent = (eventData) => {
   return api.post('/events', eventData);
 };
 
-// --- ADD THESE FUNCTIONS ---
 const rsvpToEvent = (eventId) => {
   return api.post(`/events/${eventId}/rsvp`);
 };
@@ -27,13 +26,25 @@ const cancelRsvp = (eventId) => {
   return api.delete(`/events/${eventId}/rsvp`);
 };
 
+const uploadImage = (eventId, file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  return api.post(`/events/${eventId}/images`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+};
+
 const EventService = {
   getAllEvents,
   getEventById,
   searchEvents,
   createEvent,
-  rsvpToEvent, // Export these
-  cancelRsvp,  // Export these
+  rsvpToEvent,
+  cancelRsvp,
+  uploadImage,
 };
 
 export default EventService;

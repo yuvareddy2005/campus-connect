@@ -1,6 +1,7 @@
 package com.campusconnect.campus_connect.controller;
 
-import com.campusconnect.campus_connect.dto.ApiResponse; // Import wrapper
+import com.campusconnect.campus_connect.dto.ApiResponse;
+import org.springframework.web.multipart.MultipartFile;
 import com.campusconnect.campus_connect.dto.EventResponseDto;
 import com.campusconnect.campus_connect.entity.Event;
 import com.campusconnect.campus_connect.service.EventService;
@@ -25,24 +26,24 @@ public class EventController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<EventResponseDto>> getEventById(@PathVariable Long id) {
-        // We rely on the service throwing an exception if not found, which
-        // GlobalExceptionHandler catches
-        // Or we use .orElseThrow in the service.
-        // For now, let's assume the service returns Optional, but standard practice
-        // with this wrapper
-        // is to have the Service throw "ResourceNotFoundException" if missing.
-        // Assuming your service returns Optional:
         return eventService.getEventById(id)
                 .map(event -> ResponseEntity.ok(new ApiResponse<>(true, "Event fetched successfully", event)))
                 .orElse(ResponseEntity.notFound().build());
-        // Note: ideally we'd throw an exception here too to get a JSON 404, but this is
-        // fine for now.
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<EventResponseDto>> createEvent(@RequestBody Event event) {
         EventResponseDto createdEvent = eventService.createEvent(event);
         return ResponseEntity.ok(new ApiResponse<>(true, "Event created successfully", createdEvent));
+    }
+
+    @PostMapping("/{id}/images")
+    public ResponseEntity<ApiResponse<EventResponseDto>> uploadImage(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file) {
+
+        EventResponseDto updatedEvent = eventService.uploadEventImage(id, file);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Image uploaded successfully", updatedEvent));
     }
 
     @PutMapping("/{id}")
