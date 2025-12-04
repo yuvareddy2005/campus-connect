@@ -14,6 +14,10 @@ const EventForm = () => {
     date: '',
     location: '',
   });
+  
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState('');
+  
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
@@ -28,13 +32,34 @@ const EventForm = () => {
     }
   };
 
+  const handleTagKeyDown = (e) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      const newTag = tagInput.trim().replace(',', '');
+      
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+        setTagInput('');
+      }
+    }
+  };
+
+  const removeTag = (tagToRemove) => {
+    setTags(tags.filter(tag => tag !== tagToRemove));
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setUploading(true);
 
     try {
-      const response = await EventService.createEvent(formData);
+      const eventPayload = {
+        ...formData,
+        tags: tags
+      };
+
+      const response = await EventService.createEvent(eventPayload);
       const newEventId = response.data.id;
 
       if (file) {
@@ -60,8 +85,29 @@ const EventForm = () => {
         </div>
   
         <div className="form-group">
+          <label>Tags (Press Enter to add)</label>
+          <div className="tag-input-container">
+            <div className="tag-list">
+              {tags.map((tag, index) => (
+                <span key={index} className="tag-pill-form">
+                  #{tag}
+                  <button type="button" onClick={() => removeTag(tag)} className="tag-remove-btn">×</button>
+                </span>
+              ))}
+            </div>
+            <input 
+              type="text" 
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleTagKeyDown}
+              placeholder={tags.length === 0 ? "e.g. Tech, Music, Workshop" : ""}
+              className="tag-input-field"
+            />
+          </div>
+        </div>
+
+        <div className="form-group">
           <label style={{ marginBottom: '10px', display: 'block' }}>Event Poster (Optional)</label>
-          
           <input 
             type="file" 
             id="file-upload" 

@@ -1,6 +1,8 @@
 package com.campusconnect.campus_connect.controller;
 
 import com.campusconnect.campus_connect.dto.ApiResponse;
+import com.campusconnect.campus_connect.dto.EventRequestDto;
+
 import org.springframework.web.multipart.MultipartFile;
 import com.campusconnect.campus_connect.dto.EventResponseDto;
 import com.campusconnect.campus_connect.entity.Event;
@@ -32,8 +34,8 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<EventResponseDto>> createEvent(@RequestBody Event event) {
-        EventResponseDto createdEvent = eventService.createEvent(event);
+    public ResponseEntity<ApiResponse<EventResponseDto>> createEvent(@RequestBody EventRequestDto eventRequest) {
+        EventResponseDto createdEvent = eventService.createEvent(eventRequest);
         return ResponseEntity.ok(new ApiResponse<>(true, "Event created successfully", createdEvent));
     }
 
@@ -61,8 +63,10 @@ public class EventController {
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<Page<EventResponseDto>>> searchEvents(
             @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String tag,
             Pageable pageable) {
-        Page<EventResponseDto> events = eventService.searchEvents(keyword, pageable);
+
+        Page<EventResponseDto> events = eventService.searchEvents(keyword, tag, pageable);
         return ResponseEntity.ok(new ApiResponse<>(true, "Search results fetched successfully", events));
     }
 

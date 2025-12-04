@@ -43,6 +43,11 @@ const EventCard = ({ event }) => {
             {event.location}
           </span>
         </div>
+        <div className="card-tags">
+          {event.tags && event.tags.map((tag, index) => (
+            <span key={index} className="tag-pill">#{tag}</span>
+          ))}
+        </div>
         <p className="card-description">{event.description}</p>
       </div>
     </div>

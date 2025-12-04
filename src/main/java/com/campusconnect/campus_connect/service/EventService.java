@@ -1,25 +1,31 @@
 package com.campusconnect.campus_connect.service;
 
-import java.util.Optional;
-
+import com.campusconnect.campus_connect.dto.EventRequestDto;
+import com.campusconnect.campus_connect.dto.EventResponseDto;
+import com.campusconnect.campus_connect.dto.UserDto;
+import com.campusconnect.campus_connect.entity.Event;
+import com.campusconnect.campus_connect.entity.Tag;
+import com.campusconnect.campus_connect.entity.User;
+import com.campusconnect.campus_connect.repository.EventRepository;
+import com.campusconnect.campus_connect.repository.TagRepository;
+import com.campusconnect.campus_connect.repository.UserRepository;
+import com.campusconnect.campus_connect.specification.EventSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.campusconnect.campus_connect.dto.EventResponseDto;
-import com.campusconnect.campus_connect.dto.UserDto;
-import com.campusconnect.campus_connect.entity.Event;
-import com.campusconnect.campus_connect.entity.User;
-import com.campusconnect.campus_connect.repository.EventRepository;
-import com.campusconnect.campus_connect.repository.UserRepository;
-import com.campusconnect.campus_connect.specification.EventSpecification;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -32,6 +38,9 @@ public class EventService {
 
     @Autowired
     private FileStorageService fileStorageService;
+
+    @Autowired
+    private TagRepository tagRepository;
 
     public Page<EventResponseDto> getAllEvents(Pageable pageable) {
         Page<Event> events = eventRepository.findAll(pageable);
@@ -46,32 +55,47 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new RuntimeException("Event not found"));
 
-        // Store the file and get the filename
         String fileName = fileStorageService.storeFile(file);
 
-        // Generate the download URI (this assumes we will create a controller to serve
-        // images at /api/images/{fileName})
         String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/api/images/")
                 .path(fileName)
                 .toUriString();
 
-        // Save the full URI or just the filename. Saving the URI is easier for the
-        // frontend.
         event.setImageUrl(fileDownloadUri);
         eventRepository.save(event);
 
         return convertToDto(event);
     }
 
-    public EventResponseDto createEvent(Event event) {
+    @Transactional
+    public EventResponseDto createEvent(EventRequestDto eventRequest) {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = userDetails.getUsername();
 
         User creator = userRepository.findByEmail(username)
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + username));
 
+        Event event = new Event();
+        event.setName(eventRequest.getName());
+        event.setDescription(eventRequest.getDescription());
+        event.setDate(eventRequest.getDate());
+        event.setLocation(eventRequest.getLocation());
         event.setCreator(creator);
+
+        if (eventRequest.getTags() != null && !eventRequest.getTags().isEmpty()) {
+            Set<Tag> eventTags = new HashSet<>();
+            for (String tagName : eventRequest.getTags()) {
+                String cleanName = tagName.trim();
+                if (!cleanName.isEmpty()) {
+                    Tag tag = tagRepository.findByName(cleanName)
+                            .orElseGet(() -> tagRepository.save(new Tag(cleanName)));
+                    eventTags.add(tag);
+                }
+            }
+            event.setTags(eventTags);
+        }
+
         Event savedEvent = eventRepository.save(event);
         return convertToDto(savedEvent);
     }
@@ -93,6 +117,13 @@ public class EventService {
         eventDto.setCommentCount(event.getCommentCount());
         eventDto.setAttendeeCount(event.getAttendeeCount());
 
+        if (event.getTags() != null) {
+            List<String> tagNames = event.getTags().stream()
+                    .map(Tag::getName)
+                    .collect(Collectors.toList());
+            eventDto.setTags(tagNames);
+        }
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         boolean isRsvpd = false;
         if (principal instanceof UserDetails) {
@@ -103,6 +134,7 @@ public class EventService {
             }
         }
         eventDto.setCurrentUserRsvpd(isRsvpd);
+
         return eventDto;
     }
 
@@ -120,8 +152,8 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public Page<EventResponseDto> searchEvents(String keyword, Pageable pageable) {
-        Specification<Event> spec = EventSpecification.findByCriteria(keyword);
+    public Page<EventResponseDto> searchEvents(String keyword, String tagName, Pageable pageable) {
+        Specification<Event> spec = EventSpecification.findByCriteria(keyword, tagName);
         Page<Event> events = eventRepository.findAll(spec, pageable);
         return events.map(this::convertToDto);
     }
@@ -151,5 +183,4 @@ public class EventService {
         event.getAttendees().remove(user);
         eventRepository.save(event);
     }
-
 }

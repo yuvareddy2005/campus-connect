@@ -10,9 +10,12 @@ const getEventById = (id) => {
   return api.get(`/events/${id}`);
 };
 
-const searchEvents = (keyword, page) => {
-  return api.get(`/events/search?keyword=${keyword}&page=${page}&size=${PAGE_SIZE}&sort=date,desc`);
-};
+const searchEvents = (keyword, tag, page) => {
+  let url = `/events/search?page=${page}&size=${PAGE_SIZE}&sort=date,desc`;
+  if (keyword) url += `&keyword=${encodeURIComponent(keyword)}`;
+  if (tag) url += `&tag=${encodeURIComponent(tag)}`; 
+  return api.get(url);
+}
 
 const createEvent = (eventData) => {
   return api.post('/events', eventData);
