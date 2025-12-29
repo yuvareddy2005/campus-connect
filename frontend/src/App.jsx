@@ -7,6 +7,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import CreateEventPage from './pages/CreateEventPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import Navbar from './components/layout/Navbar';
+import ClubListPage from './pages/ClubListPage';
 function App() {
   return (
     <Router>
@@ -21,9 +22,9 @@ function App() {
             <Route path="/feed" element={<FeedPage />} />
             <Route path="/events/:id" element={<EventDetailsPage />} />
             <Route path="/events/new" element={<CreateEventPage />} />
-            {/* We'll create Profile and Settings pages later */}
             <Route path="/profile" element={<div>Profile Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
+            <Route path="/clubs" element={<ClubListPage />} />
           </Route>
         </Routes>
       </div>

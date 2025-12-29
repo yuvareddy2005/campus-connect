@@ -39,6 +39,9 @@ const Navbar = () => {
               <NavLink to="/feed">My Feed</NavLink>
             </li>
             <li>
+              <NavLink to="/clubs">Clubs</NavLink>
+            </li>
+            <li>
               <Link to="/events/new" className="create-event-button">
                 Create Event
               </Link>

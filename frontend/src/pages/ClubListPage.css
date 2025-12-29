@@ -1,0 +1,39 @@
+.clubs-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.clubs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+}
+
+.create-club-btn {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.clubs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.club-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.no-clubs-msg {
+    text-align: center;
+    color: #888;
+    margin-top: 50px;
+}

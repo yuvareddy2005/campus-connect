@@ -31,7 +31,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = { "creator", "attendees" })
+@ToString(exclude = { "creator", "attendees", "club" })
 public class Event {
 
     @Id
@@ -61,4 +61,8 @@ public class Event {
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     @JoinTable(name = "event_tags", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
+    private Club club;
 }

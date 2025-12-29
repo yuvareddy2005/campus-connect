@@ -1,5 +1,3 @@
-// File: src/main/java/com/campusconnect/campus_connect/entity/User.java
-
 package com.campusconnect.campus_connect.entity;
 
 import java.util.HashSet;
@@ -21,14 +19,14 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Entity
-@Table(name = "users") 
-@Getter 
+@Table(name = "users")
+@Getter
 @Setter
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-@ToString(exclude = "attendedEvents")
+@ToString(exclude = { "attendedEvents", "joinedClubs" })
 public class User {
 
     @Id
@@ -37,12 +35,15 @@ public class User {
 
     private String name;
 
-    @Column(unique = true, nullable = false) 
+    @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false) 
+    @Column(nullable = false)
     private String password;
 
     @ManyToMany(mappedBy = "attendees")
     private Set<Event> attendedEvents = new HashSet<>();
+
+    @ManyToMany(mappedBy = "members")
+    private Set<Club> joinedClubs = new HashSet<>();
 }
