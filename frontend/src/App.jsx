@@ -8,6 +8,8 @@ import CreateEventPage from './pages/CreateEventPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import Navbar from './components/layout/Navbar';
 import ClubListPage from './pages/ClubListPage';
+import ClubDetailsPage from './pages/ClubDetailsPage';
+import CreateClubPage from './pages/CreateClubPage';
 function App() {
   return (
     <Router>
@@ -25,6 +27,8 @@ function App() {
             <Route path="/profile" element={<div>Profile Page</div>} />
             <Route path="/settings" element={<div>Settings Page</div>} />
             <Route path="/clubs" element={<ClubListPage />} />
+            <Route path="/clubs/new" element={<CreateClubPage />} />
+            <Route path="/clubs/:id" element={<ClubDetailsPage />} />
           </Route>
         </Routes>
       </div>

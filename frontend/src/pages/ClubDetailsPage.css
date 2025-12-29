@@ -1,0 +1,94 @@
+.club-details-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.club-hero {
+  padding: 40px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.club-title {
+  font-size: 2.5rem;
+  margin: 0 0 10px 0;
+  color: var(--primary-color);
+}
+
+.member-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+}
+
+.join-club-btn {
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s;
+}
+
+.join-club-btn.join {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+}
+
+.join-club-btn.join:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.5);
+}
+
+.join-club-btn.leave {
+  background: transparent;
+  border: 1px solid #ff4d4d;
+  color: #ff4d4d;
+}
+
+.join-club-btn.leave:hover {
+  background: rgba(255, 77, 77, 0.1);
+}
+
+.club-info-section {
+  padding: 30px;
+  border-radius: 16px;
+  margin-bottom: 30px;
+}
+
+.club-info-section h2, .club-events-section h2 {
+  color: white;
+  margin-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.club-full-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+.club-founded {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.loading-text {
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #888;
+}

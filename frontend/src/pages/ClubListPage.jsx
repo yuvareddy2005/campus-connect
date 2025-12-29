@@ -29,9 +29,9 @@ const ClubListPage = () => {
     <div className="clubs-container">
       <header className="clubs-header">
         <h1>Explore Clubs</h1>
-        <button className="create-club-btn" onClick={() => alert("Create Club Feature Coming Next!")}>
+        <Link to="/clubs/new" className="create-club-btn">
           Start a Club
-        </button>
+        </Link>
       </header>
 
       {loading && <p>Loading clubs...</p>}
