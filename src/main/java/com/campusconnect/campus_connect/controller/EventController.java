@@ -70,6 +70,12 @@ public class EventController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Search results fetched successfully", events));
     }
 
+    @GetMapping("/feed")
+    public ResponseEntity<ApiResponse<Page<EventResponseDto>>> getMyFeed(Pageable pageable) {
+        Page<EventResponseDto> events = eventService.getMyFeedEvents(pageable);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Personalized feed fetched successfully", events));
+    }
+
     @PostMapping("/{eventId}/rsvp")
     public ResponseEntity<ApiResponse<Void>> rsvpToEvent(@PathVariable Long eventId) {
         eventService.rsvpToEvent(eventId);

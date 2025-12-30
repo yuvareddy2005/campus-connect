@@ -111,6 +111,24 @@ public class EventService {
         return convertToDto(savedEvent);
     }
 
+    @Transactional(readOnly = true)
+    public Page<EventResponseDto> getMyFeedEvents(Pageable pageable) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User currentUser = userRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Long> clubIds = currentUser.getJoinedClubs().stream()
+                .map(Club::getId)
+                .collect(Collectors.toList());
+
+        if (clubIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+
+        Page<Event> events = eventRepository.findByClubIdIn(clubIds, pageable);
+        return events.map(this::convertToDto);
+    }
+
     private EventResponseDto convertToDto(Event event) {
         EventResponseDto eventDto = new EventResponseDto();
         eventDto.setId(event.getId());

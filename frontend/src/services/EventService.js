@@ -6,6 +6,10 @@ const getAllEvents = (page) => {
   return api.get(`/events?page=${page}&size=${PAGE_SIZE}&sort=date,desc`);
 };
 
+const getMyFeed = (page) => {
+  return api.get(`/events/feed?page=${page}&size=${PAGE_SIZE}&sort=date,desc`);
+};
+
 const getEventById = (id) => {
   return api.get(`/events/${id}`);
 };
@@ -42,6 +46,7 @@ const uploadImage = (eventId, file) => {
 
 const EventService = {
   getAllEvents,
+  getMyFeed,
   getEventById,
   searchEvents,
   createEvent,
