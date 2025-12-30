@@ -10,6 +10,8 @@ import com.campusconnect.campus_connect.repository.EventRepository;
 import com.campusconnect.campus_connect.repository.TagRepository;
 import com.campusconnect.campus_connect.repository.UserRepository;
 import com.campusconnect.campus_connect.specification.EventSpecification;
+import com.campusconnect.campus_connect.repository.ClubRepository;
+import com.campusconnect.campus_connect.entity.Club;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,9 @@ public class EventService {
 
     @Autowired
     private TagRepository tagRepository;
+
+    @Autowired
+    private ClubRepository clubRepository;
 
     public Page<EventResponseDto> getAllEvents(Pageable pageable) {
         Page<Event> events = eventRepository.findAll(pageable);
@@ -83,6 +88,12 @@ public class EventService {
         event.setLocation(eventRequest.getLocation());
         event.setCreator(creator);
 
+        if (eventRequest.getClubId() != null) {
+            Club club = clubRepository.findById(eventRequest.getClubId())
+                    .orElseThrow(() -> new RuntimeException("Club not found"));
+            event.setClub(club);
+        }
+
         if (eventRequest.getTags() != null && !eventRequest.getTags().isEmpty()) {
             Set<Tag> eventTags = new HashSet<>();
             for (String tagName : eventRequest.getTags()) {
@@ -116,6 +127,11 @@ public class EventService {
         eventDto.setCreator(userDto);
         eventDto.setCommentCount(event.getCommentCount());
         eventDto.setAttendeeCount(event.getAttendeeCount());
+
+        if (event.getClub() != null) {
+            eventDto.setClubId(event.getClub().getId());
+            eventDto.setClubName(event.getClub().getName());
+        }
 
         if (event.getTags() != null) {
             List<String> tagNames = event.getTags().stream()
@@ -155,6 +171,11 @@ public class EventService {
     public Page<EventResponseDto> searchEvents(String keyword, String tagName, Pageable pageable) {
         Specification<Event> spec = EventSpecification.findByCriteria(keyword, tagName);
         Page<Event> events = eventRepository.findAll(spec, pageable);
+        return events.map(this::convertToDto);
+    }
+
+    public Page<EventResponseDto> getEventsByClub(Long clubId, Pageable pageable) {
+        Page<Event> events = eventRepository.findByClubId(clubId, pageable);
         return events.map(this::convertToDto);
     }
 

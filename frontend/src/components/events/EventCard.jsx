@@ -25,9 +25,11 @@ const EventCard = ({ event }) => {
         </div>
         <div className="creator-badge">
           <div className="creator-avatar">
-            {event.creator?.name?.charAt(0).toUpperCase() || 'C'}
+            {(event.clubName || event.creator?.name || 'U').charAt(0).toUpperCase()}
           </div>
-          <span className="creator-name">{event.creator?.name || 'Club Name'}</span>
+          <span className="creator-name">
+            {event.clubName || event.creator?.name || 'Unknown Host'}
+          </span>
         </div>
       </div>
 

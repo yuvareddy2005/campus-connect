@@ -18,4 +18,6 @@ public class EventResponseDto {
     private int attendeeCount;
     private boolean isCurrentUserRsvpd;
     private List<String> tags;
+    private Long clubId;
+    private String clubName;
 }

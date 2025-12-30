@@ -3,8 +3,12 @@ package com.campusconnect.campus_connect.controller;
 import com.campusconnect.campus_connect.dto.ApiResponse;
 import com.campusconnect.campus_connect.dto.ClubRequestDto;
 import com.campusconnect.campus_connect.dto.ClubResponseDto;
+import com.campusconnect.campus_connect.dto.EventResponseDto;
 import com.campusconnect.campus_connect.service.ClubService;
+import com.campusconnect.campus_connect.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +21,9 @@ public class ClubController {
     @Autowired
     private ClubService clubService;
 
+    @Autowired
+    private EventService eventService;
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<ClubResponseDto>>> getAllClubs() {
         List<ClubResponseDto> clubs = clubService.getAllClubs();
@@ -28,6 +35,14 @@ public class ClubController {
         return clubService.getClubById(id)
                 .map(club -> ResponseEntity.ok(new ApiResponse<>(true, "Club fetched successfully", club)))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/{id}/events")
+    public ResponseEntity<ApiResponse<Page<EventResponseDto>>> getClubEvents(
+            @PathVariable Long id,
+            Pageable pageable) {
+        Page<EventResponseDto> events = eventService.getEventsByClub(id, pageable);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Club events fetched successfully", events));
     }
 
     @PostMapping

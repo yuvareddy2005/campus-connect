@@ -103,7 +103,16 @@ const EventDetailsPage = () => {
             </div>
         </div>
 
-        <p className="details-creator">Hosted by {event.creator?.name || 'Unknown'}</p>
+        <p className="details-creator">
+          Hosted by{' '}
+          {event.clubId ? (
+            <Link to={`/clubs/${event.clubId}`} className="creator-link">
+              {event.clubName}
+            </Link>
+          ) : (
+            event.creator?.name || 'Unknown'
+          )}
+        </p>
         
         <div className="attendee-badge">
             <span className="attendee-icon">👥</span>

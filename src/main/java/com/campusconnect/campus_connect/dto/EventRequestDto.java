@@ -11,4 +11,5 @@ public class EventRequestDto {
     private LocalDate date;
     private String location;
     private List<String> tags;
+    private Long clubId;
 }

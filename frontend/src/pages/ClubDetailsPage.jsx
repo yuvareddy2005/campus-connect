@@ -1,18 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ClubService from '../services/ClubService';
+import EventCard from '../components/events/EventCard';
 import './ClubDetailsPage.css';
 
 const ClubDetailsPage = () => {
   const { id } = useParams();
   const [club, setClub] = useState(null);
+  const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const fetchClubDetails = async () => {
     try {
-      const response = await ClubService.getClubById(id);
-      setClub(response.data);
+      const [clubRes, eventsRes] = await Promise.all([
+        ClubService.getClubById(id),
+        ClubService.getClubEvents(id)
+      ]);
+      
+      setClub(clubRes.data);
+      setEvents(eventsRes.data.content || []);
     } catch (err) {
       setError('Failed to load club details.');
       console.error(err);
@@ -70,10 +77,19 @@ const ClubDetailsPage = () => {
         <p className="club-founded">Established: {new Date(club.createdDate).toLocaleDateString()}</p>
       </div>
 
-      {/* Placeholder for Club Events (Week 18 feature) */}
       <div className="club-events-section">
         <h2>Upcoming Events</h2>
-        <p style={{ color: '#888', fontStyle: 'italic' }}>No events scheduled yet.</p>
+        {events.length > 0 ? (
+          <div className="clubs-grid">
+             {events.map(event => (
+               <Link to={`/events/${event.id}`} key={event.id} style={{textDecoration: 'none', color: 'inherit'}}>
+                  <EventCard event={event} />
+               </Link>
+             ))}
+          </div>
+        ) : (
+          <p style={{ color: '#888', fontStyle: 'italic' }}>No events scheduled yet.</p>
+        )}
       </div>
     </div>
   );

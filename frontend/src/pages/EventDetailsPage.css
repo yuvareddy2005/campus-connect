@@ -108,3 +108,13 @@
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.8);
 }
+
+.creator-link {
+  color: var(--primary-color);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.creator-link:hover {
+  text-decoration: underline;
+}

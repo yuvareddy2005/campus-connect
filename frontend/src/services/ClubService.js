@@ -8,6 +8,10 @@ const getClubById = (id) => {
   return api.get(`/clubs/${id}`);
 };
 
+const getClubEvents = (id) => {
+  return api.get(`/clubs/${id}/events?sort=date,asc`);
+};
+
 const createClub = (clubData) => {
   return api.post('/clubs', clubData);
 };
@@ -23,6 +27,7 @@ const leaveClub = (id) => {
 const ClubService = {
   getAllClubs,
   getClubById,
+  getClubEvents,
   createClub,
   joinClub,
   leaveClub,

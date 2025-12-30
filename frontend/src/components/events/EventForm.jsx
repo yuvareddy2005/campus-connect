@@ -1,18 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EventService from '../../services/EventService';
+import ClubService from '../../services/ClubService'; // Import ClubService
 import './EventForm.css';
 
 const EventForm = () => {
   const navigate = useNavigate();
   
   const [file, setFile] = useState(null);
+  const [clubs, setClubs] = useState([]); // Store available clubs
   
   const [formData, setFormData] = useState({
     name: '',
     description: '',
     date: '',
     location: '',
+    clubId: '' // Add clubId to form state
   });
   
   const [tags, setTags] = useState([]);
@@ -21,7 +24,22 @@ const EventForm = () => {
   const [error, setError] = useState('');
   const [uploading, setUploading] = useState(false);
 
-  const { name, description, date, location } = formData;
+  const { name, description, date, location, clubId } = formData;
+
+  // Fetch clubs on component mount
+  useEffect(() => {
+    const fetchClubs = async () => {
+      try {
+        const response = await ClubService.getAllClubs();
+        // Only show clubs where the user is a member
+        const myClubs = response.data.filter(club => club.member);
+        setClubs(myClubs);
+      } catch (err) {
+        console.error("Failed to load clubs", err);
+      }
+    };
+    fetchClubs();
+  }, []);
 
   const onChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -56,7 +74,9 @@ const EventForm = () => {
     try {
       const eventPayload = {
         ...formData,
-        tags: tags
+        tags: tags,
+        // Convert clubId to number, or null if empty string
+        clubId: clubId ? Number(clubId) : null 
       };
 
       const response = await EventService.createEvent(eventPayload);
@@ -82,6 +102,33 @@ const EventForm = () => {
         <div className="form-group">
           <label>Event Name</label>
           <input type="text" name="name" value={name} onChange={onChange} required />
+        </div>
+
+        {/* --- NEW: Club Selection Dropdown --- */}
+        <div className="form-group">
+          <label>Host Club (Optional)</label>
+          <select 
+            name="clubId" 
+            value={clubId} 
+            onChange={onChange}
+            className="form-select" // We might need to style this
+            style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '4px',
+                backgroundColor: 'var(--surface-color)',
+                border: '1px solid var(--border-color)',
+                color: 'var(--text-color)',
+                fontFamily: 'inherit'
+            }}
+          >
+            <option value="">-- Post as Personal Event --</option>
+            {clubs.map(club => (
+              <option key={club.id} value={club.id}>
+                {club.name}
+              </option>
+            ))}
+          </select>
         </div>
   
         <div className="form-group">
